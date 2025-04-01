@@ -1,0 +1,11 @@
+# Build directories
+build/
+
+# vscode
+.vscode
+
+# Sphinx
+API/
+
+# TODOs
+TODO
