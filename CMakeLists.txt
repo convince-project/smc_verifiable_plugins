@@ -88,9 +88,11 @@ install(TARGETS ${PROJECT_NAME}
     BUNDLE DESTINATION bin COMPONENT Runtime
 )
 
-export(EXPORT ${PROJECT_NAME}Targets
-       FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
-       NAMESPACE ${PROJECT_NAME}::
-)
+if(CMAKE_EXPORT_PACKAGE_REGISTRY)
+  export(EXPORT ${PROJECT_NAME}Targets
+        FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
+        NAMESPACE ${PROJECT_NAME}::
+  )
 
-export(PACKAGE ${PROJECT_NAME})
+  export(PACKAGE ${PROJECT_NAME})
+endif()
