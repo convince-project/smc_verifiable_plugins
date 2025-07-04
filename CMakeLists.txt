@@ -33,9 +33,9 @@ include_directories(${INCLUDE_DIR})
 add_library(${PROJECT_NAME} INTERFACE)
 
 # Generate the various plugins
-set(PLUGIN_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/plugins/include)
+set(PLUGIN_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/plugins/include)
 
-add_library(int_accumulation_smc_plugin SHARED ${PROJECT_SOURCE_DIR}/plugins/src/int_accumulation_smc_plugin.cpp)
+add_library(int_accumulation_smc_plugin SHARED ${CMAKE_CURRENT_SOURCE_DIR}/plugins/src/int_accumulation_smc_plugin.cpp)
 target_include_directories(int_accumulation_smc_plugin PUBLIC ${PLUGIN_INCLUDE_DIR})
 
 
@@ -51,48 +51,49 @@ if(BUILD_TESTING)
   add_executable(test_plugin_loading ${TEST_DIRECTORY}/test_plugin_loading.cpp)
   target_link_libraries(test_plugin_loading GTest::gtest GTest::gtest_main)
   gtest_add_tests(TARGET test_plugin_loading WORKING_DIRECTORY ${PLUGINS_DIR})
-
 endif()
 
-### Install the package
 
-# Copy the include files over
-add_custom_target(${PROJECT_NAME}_includes
-	ALL ${CMAKE_COMMAND} -E copy_directory
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}"
-    "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}"
-  COMMENT "Copying include folder."
-)
-
-# Generate the cmake modules
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-    VERSION ${PROJECT_VERSION}
-    COMPATIBILITY AnyNewerVersion
-)
-configure_package_config_file(
-  "${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in"
-  "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-  INSTALL_DESTINATION lib/cmake/${PROJECT_NAME}
-  PATH_VARS INCLUDE_DIR
-)
-
-# Export everything
-install(TARGETS ${PROJECT_NAME}
-    EXPORT ${PROJECT_NAME}Targets
-    LIBRARY DESTINATION lib COMPONENT Runtime
-    ARCHIVE DESTINATION lib COMPONENT Development
-    RUNTIME DESTINATION bin COMPONENT Runtime
-    PUBLIC_HEADER DESTINATION include COMPONENT Development
-    BUNDLE DESTINATION bin COMPONENT Runtime
-)
-
-if(CMAKE_EXPORT_PACKAGE_REGISTRY)
-  export(EXPORT ${PROJECT_NAME}Targets
-        FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
-        NAMESPACE ${PROJECT_NAME}::
+### Install the package: required only in case we are building it manually
+if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  # Copy the include files over
+  add_custom_target(${PROJECT_NAME}_includes
+    ALL ${CMAKE_COMMAND} -E copy_directory
+      "${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}"
+      "${CMAKE_BINARY_DIR}/include/${PROJECT_NAME}"
+    COMMENT "Copying include folder."
   )
 
-  export(PACKAGE ${PROJECT_NAME})
+  # Generate the cmake modules
+  include(CMakePackageConfigHelpers)
+  write_basic_package_version_file(
+      "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+      VERSION ${PROJECT_VERSION}
+      COMPATIBILITY AnyNewerVersion
+  )
+  configure_package_config_file(
+    "${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in"
+    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION lib/cmake/${PROJECT_NAME}
+    PATH_VARS INCLUDE_DIR
+  )
+
+  # Export everything
+  install(TARGETS ${PROJECT_NAME}
+      EXPORT ${PROJECT_NAME}Targets
+      LIBRARY DESTINATION lib COMPONENT Runtime
+      ARCHIVE DESTINATION lib COMPONENT Development
+      RUNTIME DESTINATION bin COMPONENT Runtime
+      PUBLIC_HEADER DESTINATION include COMPONENT Development
+      BUNDLE DESTINATION bin COMPONENT Runtime
+  )
+
+  if(CMAKE_EXPORT_PACKAGE_REGISTRY)
+    export(EXPORT ${PROJECT_NAME}Targets
+          FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
+          NAMESPACE ${PROJECT_NAME}::
+    )
+
+    export(PACKAGE ${PROJECT_NAME})
+  endif()
 endif()
