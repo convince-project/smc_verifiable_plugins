@@ -9,8 +9,6 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 # Enable compile commands export for clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-# Enable exporting of package to cmake package registry (for finding it in other packages)
-set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
 # specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -88,12 +86,10 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
       BUNDLE DESTINATION bin COMPONENT Runtime
   )
 
-  if(CMAKE_EXPORT_PACKAGE_REGISTRY)
-    export(EXPORT ${PROJECT_NAME}Targets
-          FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
-          NAMESPACE ${PROJECT_NAME}::
-    )
+  export(EXPORT ${PROJECT_NAME}Targets
+        FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
+        NAMESPACE ${PROJECT_NAME}::
+  )
 
-    export(PACKAGE ${PROJECT_NAME})
-  endif()
+  export(PACKAGE ${PROJECT_NAME})
 endif()
