@@ -25,17 +25,18 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set(INCLUDE_DIR "include")
-
-include_directories(${INCLUDE_DIR})
 
 # Just a placeholder
 add_library(${PROJECT_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME} INTERFACE
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>)
 
 # Generate the various plugins
 set(PLUGIN_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/plugins/include)
 
 add_library(int_accumulation_smc_plugin SHARED ${CMAKE_CURRENT_SOURCE_DIR}/plugins/src/int_accumulation_smc_plugin.cpp)
+target_link_libraries(int_accumulation_smc_plugin ${PROJECT_NAME})
 target_include_directories(int_accumulation_smc_plugin PUBLIC ${PLUGIN_INCLUDE_DIR})
 
 
@@ -49,7 +50,7 @@ if(BUILD_TESTING)
 
   # Unit tests
   add_executable(test_plugin_loading ${TEST_DIRECTORY}/test_plugin_loading.cpp)
-  target_link_libraries(test_plugin_loading GTest::gtest GTest::gtest_main)
+  target_link_libraries(test_plugin_loading ${PROJECT_NAME} GTest::gtest GTest::gtest_main)
   gtest_add_tests(TARGET test_plugin_loading WORKING_DIRECTORY ${PLUGINS_DIR})
 endif()
 
@@ -72,10 +73,9 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
       COMPATIBILITY AnyNewerVersion
   )
   configure_package_config_file(
-    "${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Config.cmake.in"
     "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
     INSTALL_DESTINATION lib/cmake/${PROJECT_NAME}
-    PATH_VARS INCLUDE_DIR
   )
 
   # Export everything
