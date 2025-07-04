@@ -24,7 +24,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# Just a placeholder
+# Install it only if strictly required
+option(SMC_PLUGINS_EXPORT_LIB "Whether to install export the library in the cmake registry." ON)
+if(SMC_PLUGINS_EXPORT_LIB AND NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  set(SMC_PLUGINS_EXPORT_LIB OFF)
+endif()
+
+# The library, composed by header files only
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
@@ -54,7 +60,7 @@ endif()
 
 
 ### Install the package: required only in case we are building it manually
-if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+if(SMC_PLUGINS_EXPORT_LIB)
   # Copy the include files over
   add_custom_target(${PROJECT_NAME}_includes
     ALL ${CMAKE_COMMAND} -E copy_directory
