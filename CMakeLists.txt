@@ -89,7 +89,7 @@ install(TARGETS ${PROJECT_NAME}
 )
 
 export(EXPORT ${PROJECT_NAME}Targets
-       FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
+       FILE "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake"
        NAMESPACE ${PROJECT_NAME}::
 )
 
