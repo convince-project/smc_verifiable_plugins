@@ -1,0 +1,51 @@
+name: Build tests and archive executable
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "main"
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+# Make sure that there is one job per branch
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        container: ubuntu:22.04
+        steps:
+            - name: Update apt
+              run: |
+                    apt update
+              # install the dependencies
+            - name: Install dependencies
+              run: |
+                    apt install -y build-essential git cmake libgtest-dev
+            - name: Install linters
+              run: |
+                    apt install -y clang clang-tidy clang-format g++-12 gcc-12
+                    echo "---- Print info about clang ----"
+                    clang -v
+                    echo "---- Print info about clang-format ----"
+                    clang-format --version
+                    echo "---- Print info about clang-tidy ----"
+                    clang-tidy --version
+            - name: Checkout current repository
+              uses: actions/checkout@v4
+            - name: Build smc_verifiable_plugins
+              run: |
+                    mkdir build
+                    cd build
+                    cmake .. -DCMAKE_BUILD_TYPE=Release
+                    make
+            - name: Run linters
+              uses: pre-commit/action@v3.0.1
+            - name: Run tests
+              run: |
+                    cd build
+                    # Repeat the failing tests up to 3 times, due to statistical possible failures
+                    ctest --repeat until-pass:3
