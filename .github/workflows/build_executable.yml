@@ -24,7 +24,7 @@ jobs:
               # install the dependencies
             - name: Install dependencies
               run: |
-                    apt install -y build-essential git cmake libgtest-dev
+                    apt install -y build-essential git cmake libgtest-dev python
             - name: Install linters
               run: |
                     apt install -y clang clang-tidy clang-format g++-12 gcc-12
@@ -47,5 +47,4 @@ jobs:
             - name: Run tests
               run: |
                     cd build
-                    # Repeat the failing tests up to 3 times, due to statistical possible failures
-                    ctest --repeat until-pass:3
+                    ctest
