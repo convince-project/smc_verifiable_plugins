@@ -24,7 +24,7 @@ jobs:
               # install the dependencies
             - name: Install dependencies
               run: |
-                    apt install -y build-essential git cmake libgtest-dev python3
+                    apt install -y build-essential git cmake libgtest-dev
             - name: Install linters
               run: |
                     apt install -y clang clang-tidy clang-format g++-12 gcc-12
@@ -42,7 +42,11 @@ jobs:
                     cd build
                     cmake .. -DCMAKE_BUILD_TYPE=Release
                     make
-            - name: Run linters
+            - name: Checkout pre-commit linters
+              uses: actions/checkout@v3
+            - name: Setup pre-commit linters
+              uses: actions/setup-python@v3
+            - name: Run pre-commit linters
               uses: pre-commit/action@v3.0.1
             - name: Run tests
               run: |
