@@ -24,7 +24,7 @@ jobs:
               # install the dependencies
             - name: Install dependencies
               run: |
-                    apt install -y build-essential git cmake libgtest-dev python
+                    apt install -y build-essential git cmake libgtest-dev python3
             - name: Install linters
               run: |
                     apt install -y clang clang-tidy clang-format g++-12 gcc-12
