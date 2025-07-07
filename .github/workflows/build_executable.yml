@@ -17,6 +17,22 @@ jobs:
     build:
         runs-on: ubuntu-22.04
         steps:
+            - name: Update apt
+              run: |
+                    sudo apt update
+              # install the dependencies
+            - name: Install dependencies
+              run: |
+                    sudo apt install -y build-essential git cmake libgtest-dev
+            - name: Install linters
+              run: |
+                    sudo apt install -y clang clang-tidy clang-format g++-12 gcc-12
+                    echo "---- Print info about clang ----"
+                    clang -v
+                    echo "---- Print info about clang-format ----"
+                    clang-format --version
+                    echo "---- Print info about clang-tidy ----"
+                    clang-tidy --version
             - name: Checkout current repository
               uses: actions/checkout@v4
             - name: Build smc_verifiable_plugins
