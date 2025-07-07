@@ -46,6 +46,10 @@ jobs:
                     cd build
                     cmake .. -DCMAKE_BUILD_TYPE=Release
                     make
+            - name: Update pip
+              run: |
+              pip install --upgrade pip
+              pip install setuptools_rust
             - name: Run pre-commit linters
               uses: pre-commit/action@v3.0.1
             - name: Run tests
