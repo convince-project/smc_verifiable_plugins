@@ -15,19 +15,18 @@ concurrency:
 
 jobs:
     build:
-        runs-on: ubuntu-latest
-        container: ubuntu:22.04
+        runs-on: ubuntu-22.04
         steps:
             - name: Update apt
               run: |
-                    apt update
+                    sudo apt update
               # install the dependencies
             - name: Install dependencies
               run: |
-                    apt install -y build-essential git cmake libgtest-dev
+                    sudo apt install -y build-essential git cmake libgtest-dev
             - name: Install linters
               run: |
-                    apt install -y clang clang-tidy clang-format g++-12 gcc-12
+                    sudo apt install -y clang clang-tidy clang-format g++-12 gcc-12
                     echo "---- Print info about clang ----"
                     clang -v
                     echo "---- Print info about clang-format ----"
@@ -42,10 +41,17 @@ jobs:
                     cd build
                     cmake .. -DCMAKE_BUILD_TYPE=Release
                     make
-            - name: Run linters
+            - name: Setup python3 for pre-commit
+              uses: actions/setup-python@v5
+              with:
+                python-version: '3.10'
+            - name: Update pip
+              run: |
+                    pip install --upgrade pip
+                    pip install setuptools_rust
+            - name: Run pre-commit linters
               uses: pre-commit/action@v3.0.1
             - name: Run tests
               run: |
                     cd build
-                    # Repeat the failing tests up to 3 times, due to statistical possible failures
-                    ctest --repeat until-pass:3
+                    ctest
