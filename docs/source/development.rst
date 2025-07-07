@@ -122,7 +122,7 @@ In this example, we expect that no configuration parameter is defined, so our me
         }
     };
 
-but one could, for example, configure a max. bound for the accumulated value, or add a configuration to always consider the absolute value, or more sophisticated things. depending on the application.
+but one could, for example, configure a max. bound for the accumulated value, or add a configuration to always consider the absolute value, or more sophisticated things, depending on the application.
 
 processReset
 ______________
@@ -170,4 +170,4 @@ In this case, it looks like this:
 
     GENERATE_PLUGIN_LOADER(IntAccumulationSmcPlugin);
 
-The can be found in the `utils.hpp file <https://github.com/convince-project/smc_verifiable_plugins/blob/main/include/smc_verifiable_plugins/utils.hpp>`.
+The definition of this macro can be found in the `utils.hpp file <https://github.com/convince-project/smc_verifiable_plugins/blob/main/include/smc_verifiable_plugins/utils.hpp>`.

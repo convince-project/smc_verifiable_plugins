@@ -11,7 +11,7 @@ Plugins can be developed using the SmcPluginBase class provided in the smc_plugi
 JANI models making use of plugins, can be executed only by means of its custom cache-less states expansion modality (using the `--disable-explored-states-caching` flag).
 Additionally, the paths to the folders containing all required plugins shall be provided when invoking SMC Storm (using `--plugin-paths`).
 
-Here an example for verifying the plugin-based model called `sum_dice_throws_plugins.jani` using smc_storm:
+Here is an example for verifying the plugin-based model called `sum_dice_throws_plugins.jani` using smc_storm:
 
 .. code-block:: bash
 
