@@ -16,7 +16,6 @@
  */
 #pragma once
 #include "smc_verifiable_plugins/smc_plugin_base.hpp"
-#include <stdexcept>
 #include <vector>
 
 namespace smc_verifiable_plugins {
