@@ -32,7 +32,7 @@ class IntAccumulationSmcPlugin : public SmcPluginBase {
     /*!
      * @copydoc SmcPluginBase::getPluginName()
      */
-    std::string getPluginName() override {
+    std::string getPluginName() const override {
         return "int_accumulation_smc_plugin";
     }
 
@@ -45,12 +45,12 @@ class IntAccumulationSmcPlugin : public SmcPluginBase {
     /*!
      * @copydoc SmcPluginBase::processReset()
      */
-    DataExchange processReset() override;
+    std::optional<DataExchange> processReset() override;
 
     /*!
      * @copydoc SmcPluginBase::processInputParameters(const DataExchange& input_data)
      */
-    DataExchange processInputParameters(const DataExchange& input_data) override;
+    std::optional<DataExchange> processInputParameters(const DataExchange& input_data) override;
 
     int64_t _current_state = 0U;
     const std::string _input_label;
