@@ -69,16 +69,16 @@ Let's look at how to develop a simple SMC Plugin by looking at the `exemplary pl
 
         ~IntAccumulationSmcPlugin();
 
-        std::string getPluginName() override {
+        std::string getPluginName() const override {
             return "int_accumulation_smc_plugin";
         }
 
     private:
         void processInitParameters(const DataExchange& config) override;
 
-        DataExchange processReset() override;
+        std::optional<DataExchange> processReset() override;
 
-        DataExchange processInputParameters(const DataExchange& input_data) override;
+        std::optional<DataExchange> processInputParameters(const DataExchange& input_data) override;
 
         int64_t _current_state = 0U;
         const std::string _input_label;
@@ -98,6 +98,8 @@ The DataExchange type
 This type is the communication interface between a model checker and a plugin.
 
 It consists of a `std::unordered_map<std::string, std::variant<int64_t, double, bool>>`, that serves as a map between a `label` and a `value`, that can be either an integer, a real or a boolean value.
+
+The return value of plugins' operations (i.e. the ones from the `processReset` and `processInputParameters` methods) are optional, and in case of nullopt are interpreted as an error from the plugin side. In this case, the model checker is expected to consider the trace result as "Unknown" and start a new one.
 
 The methods to override
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -133,9 +135,9 @@ For our example, we want the accumulated value to be reset to its initial value,
 
 .. code-block:: cpp
 
-    IntAccumulationSmcPlugin::DataExchange IntAccumulationSmcPlugin::processReset() {
+    std::optional<DataExchange> IntAccumulationSmcPlugin::processReset() {
         _current_state = 0U;
-        return {{_output_label, _current_state}};
+        return std::make_optional<DataExchange>({{_output_label, _current_state}});
     }
 
 processInputParameters
@@ -151,12 +153,12 @@ This is achieved with the following snippet:
 
 .. code-block:: cpp
 
-    IntAccumulationSmcPlugin::DataExchange IntAccumulationSmcPlugin::processInputParameters(const DataExchange& input_data) {
+    std::optional<DataExchange> IntAccumulationSmcPlugin::processInputParameters(const DataExchange& input_data) {
         if (input_data.size() != 1U && !input_data.contains(_input_label)) {
             throw std::invalid_argument("Invalid input provided. Expected only one integer.");
         }
         _current_state += std::get<int64_t>(input_data.at(_input_label));
-        return {{_output_label, _current_state}};
+        return std::make_optional<DataExchange>({{_output_label, _current_state}});
     }
 
 Generate the plugins's loader

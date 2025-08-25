@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 #pragma once
+#include <optional>
 #include <stdexcept>
 #include <stdint.h>
 #include <unordered_map>
@@ -22,28 +23,28 @@
 
 namespace smc_verifiable_plugins {
 /*!
+ * @brief The data structure containing all the variables serving as interface between this plugin and the SMC engine
+ */
+using DataExchange = std::unordered_map<std::string, std::variant<int64_t, double, bool>>;
+
+/*!
  * @brief Base class providing the minimum interface required by a plugin to work with SMC
  */
 class SmcPluginBase {
   public:
-    /*!
-     * @brief The data structure containing all the variables serving as interface between this plugin and the SMC engine
-     */
-    using DataExchange = std::unordered_map<std::string, std::variant<int64_t, double, bool>>;
-
     virtual ~SmcPluginBase() = default;
 
     /*!
      * @brief Get a string containing the plugin name
      * @return The string ID of the loaded plugin instance (e.g. "SmcPluginBase")
      */
-    virtual std::string getPluginName() = 0;
+    virtual std::string getPluginName() const = 0;
 
     /*!
      * @brief Set the random seed for the plugin
      * @param seed The seed value to set
      */
-    virtual void setRandomSeed(const uint32_t seed) {}
+    virtual void setRandomSeed([[maybe_unused]] const uint32_t seed) {}
 
     /*!
      * @brief Configure the plugin before resetting and using it.
@@ -56,9 +57,9 @@ class SmcPluginBase {
 
     /*!
      * @brief Reset the plugin to the initial state
-     * @return The initial state of the output variables
+     * @return The initial state of the output variables, or nullopt in case of errors.
      */
-    DataExchange reset() {
+    std::optional<DataExchange> reset() {
         checkParamsLoaded();
         return processReset();
     }
@@ -66,9 +67,9 @@ class SmcPluginBase {
     /*!
      * @brief Advances the plugin to the next state
      * @param input_data The data used to control the evolution of the plugin
-     * @return The output values associated to the new reached state
+     * @return The output values associated to the new reached state, or nullopt in case of errors.
      */
-    inline DataExchange nextStep(const DataExchange& input_data) {
+    inline std::optional<DataExchange> nextStep(const DataExchange& input_data) {
         checkParamsLoaded();
         return processInputParameters(input_data);
     }
@@ -82,16 +83,16 @@ class SmcPluginBase {
 
     /*!
      * @brief Reset the plugin to the initial state.
-     * @return The initial state of the output variables.
+     * @return The initial state of the output variables, or nullopt in case of errors..
      */
-    virtual DataExchange processReset() = 0;
+    virtual std::optional<DataExchange> processReset() = 0;
 
     /*!
      * @brief Process the input parameters provided to advance the plugin to its next state.
      * @param config The structure containing the configuration to load.
-     * @return The new plugin state, after getting to its next state.
+     * @return The new plugin state, after getting to its next state, or nullopt in case of errors.
      */
-    virtual DataExchange processInputParameters(const DataExchange& config) = 0;
+    virtual std::optional<DataExchange> processInputParameters(const DataExchange& config) = 0;
 
     inline void setParamsLoaded() {
         _params_loaded = true;

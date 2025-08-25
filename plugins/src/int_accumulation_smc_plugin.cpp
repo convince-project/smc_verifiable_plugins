@@ -31,17 +31,17 @@ void IntAccumulationSmcPlugin::processInitParameters(const DataExchange& config)
     }
 };
 
-IntAccumulationSmcPlugin::DataExchange IntAccumulationSmcPlugin::processReset() {
+std::optional<DataExchange> IntAccumulationSmcPlugin::processReset() {
     _current_state = 0U;
-    return {{_output_label, _current_state}};
+    return std::make_optional<DataExchange>({{_output_label, _current_state}});
 }
 
-IntAccumulationSmcPlugin::DataExchange IntAccumulationSmcPlugin::processInputParameters(const DataExchange& input_data) {
+std::optional<DataExchange> IntAccumulationSmcPlugin::processInputParameters(const DataExchange& input_data) {
     if (input_data.size() != 1U && !input_data.contains(_input_label)) {
         throw std::invalid_argument("Invalid input provided. Expected only one integer.");
     }
     _current_state += std::get<int64_t>(input_data.at(_input_label));
-    return {{_output_label, _current_state}};
+    return std::make_optional<DataExchange>({{_output_label, _current_state}});
 }
 
 GENERATE_PLUGIN_LOADER(IntAccumulationSmcPlugin);
