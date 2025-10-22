@@ -52,10 +52,11 @@ schema(
 
 ## Installation
 
-If using this package for developing new plugins, it is enough to integrate it in your CMake project following the instructions in [the documentation](https://convince-project.github.io/smc_verifiable_plugins/development.html#fetch-this-package-in-cmake).
+To use this package for developing new plugins, it is enough to integrate it in your CMake project following the instructions in [the documentation](https://convince-project.github.io/smc_verifiable_plugins/development.html#fetch-this-package-in-cmake).
 
-For active development of this package, having it build will automatically this package available to the other packages depending on it, that can found this package using CMake's `find(smc_verifiable_plugins REQUIRED)` macro.
-After running that macro, the variable `smc_verifiable_plugins_INCLUDE_DIR` with the path to the include folder, and the variable `smc_verifiable_plugins_PLUGINS_PATH` with the path to the library folder, will be provided, and can be used to locate the existing plugins' libraries.
+For active development of this package, having it built will automatically make it available to the other packages depending on it, using the `find(smc_verifiable_plugins REQUIRED)` macro from CMake.
+After running that, the variable `smc_verifiable_plugins_INCLUDE_DIR` with the path to the include folder, and the variable `smc_verifiable_plugins_PLUGINS_PATH` with the path to the compiled plugins libraries folder, will be available.
+Those variables can be used to locate the header files and the plugins.
 
 The following steps are necessary to build the package:
 ```bash
