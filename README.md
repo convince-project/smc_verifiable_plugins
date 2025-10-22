@@ -11,45 +11,8 @@ In [smc_storm](https://github.com/convince-project/smc_storm) we implemented an 
 ## Plugin development
 
 An exemplary SMC plugin is provided [here](plugins/src/int_accumulation_smc_plugin.cpp), together with its [header class](plugins/include/int_accumulation_smc_plugin.hpp).
-In the following section, we provide an explanation of how a new SMC plugin can be developed.
 
-### The SMC Plugin's class definition
-
-All plugins are expected to inherit from the *SmcPluginBase* class provided [here](include/smc_verifiable_plugins/smc_plugin_base.hpp).
-
-For each new SMC plugin class, the following methods need to be overridden:
-
-* `getPluginName`: Method that returns the name of the plugin instance.
-* `processInitParameters`: Method to process the configuration parameters, required to set each new plugin object instance.
-* `processReset`: Method to set the plugin instance to its initial state.
-* `processInputParameters`: Method to process the input parameters provided to the plugins, and step the SMC plugin object to its next state.
-
-### Make SMC plugins load-able
-
-Plugins can be loaded by using the function `loadSMCPlugin(plugin_folder, plugin_name)` from the [utils.hpp file](include/smc_verifiable_plugins/utils.hpp). This executes the following steps:
-* Generate a path to the SMC plugin's binary file, based on the provided `plugin_folder` and `plugin_name`.
-* Generate a new object instance by running the `getSMCPlugin()` function in the loaded library.
-* Store the new object in a `std::unique_ptr` and return it.
-
-The `getSMCPlugin()` function is a C `extern` function that must be provided in each plugin library:\n
-in the [utils.hpp file](include/smc_verifiable_plugins/utils.hpp) we provide the macro `smc_verifiable_plugins::GENERATE_SMC_PLUGIN_LOADER` that can generate such a function.
-
-An exemplary use of this function can be found at the end of [this exemplary SMC plugin](plugins/src/int_accumulation_smc_plugin.cpp).
-
-### Generate the plugin library from CMake
-
-Once this library is built, it can be loaded from any other CMake project by using the `find` function. Afterwards, new plugin libraries can be obtained using CMake's `add_library` function:
-
-```cmake
-find_package(smc_verifiable_plugins REQUIRED)
-...
-# Generate the library associated to the plugin "new_plugin_name"
-add_library(new_plugin_name SHARED path_to_plugin_folder/new_plugin_name.cpp)
-target_include_directories(new_plugin_name PUBLIC ${smc_verifiable_plugins_INCLUDE_DIR})
-```
-
-It is important to ensure that the name of the plugin (from the `getPluginName` method) and the name of the library are matching: this constraint comes from the `loadSMCPlugin` function mentioned in the previous section.
-
+We refer to the [online documentation](https://convince-project.github.io/smc_verifiable_plugins/development.html) for detailed information on how to write a new SMC plugin and how to write a CMake file for compiling and exporting it.
 
 ## Integration with JANI
 
@@ -89,10 +52,11 @@ schema(
 
 ## Installation
 
-To use this package, it is enough to build it.
-It will be exported automatically in the cmake user configuration, so that it can be found using CMake's `find(smc_verifiable_plugins REQUIRED)` macro.
-After running that macro, the variable `smc_verifiable_plugins_INCLUDE_DIR` with the path to the include folder,
-and the variable `smc_verifiable_plugins_PLUGINS_PATH` with the path to the library folder, will be provided, and can be used to locate the existing plugins' libraries.
+To use this package for developing new plugins, it is enough to integrate it in your CMake project following the instructions in [the documentation](https://convince-project.github.io/smc_verifiable_plugins/development.html#fetch-this-package-in-cmake).
+
+For active development of this package, having it built will automatically make it available to the other packages depending on it, using the `find(smc_verifiable_plugins REQUIRED)` macro from CMake.
+After running that, the variable `smc_verifiable_plugins_INCLUDE_DIR` with the path to the include folder, and the variable `smc_verifiable_plugins_PLUGINS_PATH` with the path to the compiled plugins libraries folder, will be available.
+Those variables can be used to locate the header files and the plugins.
 
 The following steps are necessary to build the package:
 ```bash
